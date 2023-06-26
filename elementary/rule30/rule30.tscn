@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://cf0aa4lmdtejq"]
+
+[ext_resource type="Script" path="res://elementary/rule30/rule30.gd" id="1_sfqrq"]
+
+[node name="Rule30" type="Node2D"]
+script = ExtResource("1_sfqrq")
+iterations = 22
