@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://wgeq6lijcgx4"]
+
+[ext_resource type="Script" path="res://elementary/rule110/rule110.gd" id="1_mdcsu"]
+
+[node name="Rule110" type="Node2D"]
+script = ExtResource("1_mdcsu")
+iterations = 1001
