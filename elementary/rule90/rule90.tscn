@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://wgeq6lijcgx4"]
+
+[ext_resource type="Script" path="res://elementary/rule90/rule90.gd" id="1_df5v0"]
+
+[node name="Rule90" type="Node2D"]
+script = ExtResource("1_df5v0")
+iterations = 300
