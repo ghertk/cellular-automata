@@ -4,4 +4,3 @@
 
 [node name="Rule30" type="Node2D"]
 script = ExtResource("1_sfqrq")
-iterations = 22
