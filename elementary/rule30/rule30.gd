@@ -7,6 +7,10 @@ extends Node
 
 
 func _ready() -> void:
+	if not DirAccess.dir_exists_absolute("user://output-rule-30"):
+		DirAccess.make_dir_absolute("user://output-rule-30")
+	var dir = DirAccess.open("user://output-rule-30")
+
 	var size = iterations * 2 - 1
 	var state = 1 << iterations - 1
 
@@ -24,8 +28,7 @@ func _ready() -> void:
 			if value >> column & 1:
 				image.set_pixel(size - 1 - column, row, cell_color)
 
-	print("Saving image")
-	image.save_png("res://test.png")
+	var file_path = dir.get_current_dir() + "/" + "rule30-{0}x{1}.png".format([image.get_width(), image.get_height()])
+	print("Saving image: " + file_path)
+	image.save_png(file_path)
 
-func _process(delta: float) -> void:
-	pass
