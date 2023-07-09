@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://378rxjhg7xec"]
+
+[ext_resource type="Script" path="res://conway_game_of_life/conway_game_of_life.gd" id="1_26urj"]
+
+[node name="ConwayGameOfLife" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_26urj")
+iteration_delay_msec = 100
+noise_density = 0.2
