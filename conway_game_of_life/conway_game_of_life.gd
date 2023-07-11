@@ -9,8 +9,7 @@ extends Control
 
 var running: bool = false
 var current_grid = []
-var rows: int = 0
-var columns: int = 0
+var grid_size: Vector2i
 
 var next_iteration_time: int = 0
 var iteration_number: int = 0
@@ -21,35 +20,19 @@ func _ready() -> void:
 	randomize()
 	var viewport = get_viewport()
 	viewport.size_changed.connect(on_resize)
-	rows = floori(viewport.size.x / cell_size)
-	columns = floori(viewport.size.y / cell_size)
+	grid_size = viewport.size / cell_size
 	reset_grid()
 
 
 func _physics_process(_delta: float) -> void:
 	if running and Time.get_ticks_msec() > next_iteration_time:
 		if not calculating_next_iteration:
-			calculating_next_iteration = true
-			iteration_number += 1
-			print("Iteration: ", iteration_number)
-			var next_grid = current_grid.duplicate()
-			for r in range(rows):
-				for c in range(columns):
-					var v = get_cell(r, c)
-					var neighbors = count_neighbor(r, c)
-					if neighbors < 2 or neighbors > 3:
-						next_grid[get_cell_index(r, c)] = false
-					if not v and neighbors == 3:
-						next_grid[get_cell_index(r, c)] = true
-			current_grid = next_grid
-			next_iteration_time = Time.get_ticks_msec() + iteration_delay_msec
-			queue_redraw()
-			calculating_next_iteration = false
+			process_next_iteration()
 
 
 func _draw() -> void:
-	for r in range(rows):
-		for c in range(columns):
+	for r in range(grid_size.x):
+		for c in range(grid_size.y):
 			var v = get_cell(r, c)
 			var color = Color.BLACK if v else Color.WHITE
 			draw_rect(Rect2(r * cell_size, c * cell_size, cell_size, cell_size), color)
@@ -77,39 +60,59 @@ func _input(event: InputEvent) -> void:
 				print(count_neighbor(r, c))
 
 
+func process_next_iteration() -> void:
+	calculating_next_iteration = true
+	iteration_number += 1
+	print("Iteration: ", iteration_number)
+	var next_grid = current_grid.duplicate()
+	for r in range(grid_size.x):
+		for c in range(grid_size.y):
+			var v = get_cell(r, c)
+			var neighbors = count_neighbor(r, c)
+			if neighbors < 2 or neighbors > 3:
+				next_grid[get_cell_index(r, c)] = false
+			if not v and neighbors == 3:
+				next_grid[get_cell_index(r, c)] = true
+	current_grid = next_grid
+	next_iteration_time = Time.get_ticks_msec() + iteration_delay_msec
+	queue_redraw()
+	calculating_next_iteration = false
+
+
+
 func reset_grid() -> void:
-	current_grid.resize(rows * columns)
-	for r in range(rows):
-		for c in range(columns):
+	current_grid.resize(grid_size.x * grid_size.y)
+	for r in range(grid_size.x):
+		for c in range(grid_size.y):
 			set_cell(r, c, false)
 
 
 func get_cell(r: int, c: int) -> bool:
-	if r < 0 or r >= rows or c < 0 or c >= columns:
+	if r < 0 or r >= grid_size.x or c < 0 or c >= grid_size.y:
 		return false
-	return current_grid[r * columns + c]
+	return current_grid[r * grid_size.y + c]
 
 
 func get_cell_index(r: int, c: int) -> int:
-	if r < 0 or r >= rows or c < 0 or c >= columns:
+	if r < 0 or r >= grid_size.x or c < 0 or c >= grid_size.y:
 		return -1
-	return r * columns + c
+	return r * grid_size.y + c
 
 
 func set_cell(r: int, c: int, v: bool) -> void:
-	if r < 0 or r >= rows:
+	if r < 0 or r >= grid_size.x:
 		return
-	if c < 0 or c >= columns:
+	if c < 0 or c >= grid_size.y:
 		return
-	current_grid[r * columns + c] = v
+	current_grid[r * grid_size.y + c] = v
 
 
 func toggle_cell(r: int, c: int) -> void:
-	if r < 0 or r >= rows:
+	if r < 0 or r >= grid_size.x:
 		return
-	if c < 0 or c >= columns:
+	if c < 0 or c >= grid_size.y:
 		return
-	current_grid[r * columns + c] = not current_grid[r * columns + c]
+	current_grid[r * grid_size.y + c] = not current_grid[r * grid_size.y + c]
 
 
 func count_neighbor(r, c) -> int:
@@ -134,15 +137,13 @@ func count_neighbor(r, c) -> int:
 
 
 func generate_noise() -> void:
-	for r in range(rows):
-		for c in range(columns):
+	for r in range(grid_size.x):
+		for c in range(grid_size.y):
 			set_cell(r, c, randf() < noise_density)
 
 
 func on_resize() -> void:
 	if not running:
-		var viewport = get_viewport()
-		rows = floori(viewport.size.x / cell_size)
-		columns = floori(viewport.size.y / cell_size)
+		grid_size = get_viewport().size / cell_size
 		reset_grid()
 
